@@ -5,7 +5,9 @@ import com.xibei.smartjobservice.util.JwtUtils;
 import com.xibei.smartjobservice.model.dto.Result;
 import com.xibei.smartjobservice.model.dto.LoginResponse;
 import com.xibei.smartjobservice.model.entity.SysUser;
+import com.xibei.smartjobservice.model.entity.SysUserRole;
 import com.xibei.smartjobservice.mapper.SysUserMapper;
+import com.xibei.smartjobservice.mapper.SysUserRoleMapper;
 import com.xibei.smartjobservice.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final SysUserMapper userMapper;
+    private final SysUserRoleMapper userRoleMapper;
 
     @Override
     public Result<LoginResponse> login(String phone, String password) {
@@ -74,6 +77,12 @@ public class AuthServiceImpl implements AuthService {
         newUser.setIsEnabled(Constants.USER_ENABLED);
 
         userMapper.insert(newUser);
+
+        // 为新用户分配默认角色（普通用户）
+        SysUserRole userRole = new SysUserRole();
+        userRole.setUserId(newUser.getId());
+        userRole.setRoleId(Constants.ROLE_USER_ID); // 普通用户角色ID
+        userRoleMapper.insert(userRole);
 
         return Result.success("注册成功");
     }

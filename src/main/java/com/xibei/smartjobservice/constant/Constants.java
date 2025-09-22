@@ -47,4 +47,9 @@ public class Constants {
 
     // 正则表达式
     public static final String PHONE_REGEX = "^1[3-9]\\d{9}$";
+
+    // 默认角色ID
+    public static final Long ROLE_SUPER_ADMIN_ID = 1000000000000000001L;
+    public static final Long ROLE_SYS_ADMIN_ID = 1000000000000000002L;
+    public static final Long ROLE_USER_ID = 1000000000000000003L;
 }
