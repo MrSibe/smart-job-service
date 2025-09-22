@@ -5,6 +5,7 @@ import com.xibei.smartjobservice.model.dto.LoginResponse;
 import com.xibei.smartjobservice.model.dto.RegisterRequest;
 import com.xibei.smartjobservice.model.dto.Result;
 import com.xibei.smartjobservice.service.AuthService;
+import com.xibei.smartjobservice.service.CaptchaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,17 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final CaptchaService captchaService;
 
     /**
      * 用户登录
      */
     @PostMapping("/login")
     public Result<LoginResponse> login(@Validated @RequestBody LoginRequest request) {
+        // 验证验证码
+        if (!captchaService.validateCaptcha(request.getCaptchaKey(), request.getCaptchaCode())) {
+            return Result.error("验证码错误或已过期");
+        }
         return authService.login(request.getPhone(), request.getPassword());
     }
 
@@ -33,6 +39,10 @@ public class AuthController {
      */
     @PostMapping("/register")
     public Result<String> register(@Validated @RequestBody RegisterRequest request) {
+        // 验证验证码
+        if (!captchaService.validateCaptcha(request.getCaptchaKey(), request.getCaptchaCode())) {
+            return Result.error("验证码错误或已过期");
+        }
         return authService.register(request.getPhone(), request.getPassword());
     }
 
